@@ -6,7 +6,7 @@
     <title>Drainage Management System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
+        <style>
         :root {
             --primary-blue: #1a4f72;
             --secondary-blue: #2c6c9e;
@@ -39,7 +39,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem 2rem;
+            padding: 0.8rem 1rem;
             background: var(--primary-blue);
             position: fixed;
             width: 100%;
@@ -51,57 +51,55 @@
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             color: white;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .navbar-brand img {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 5px;
         }
 
         .admin-icon {
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .admin-icon:hover {
-            color: var(--water-blue);
         }
 
         .main-container {
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
-            padding-top: 70px;
+            padding-top: 60px;
         }
 
         .sidebar {
-            width: 260px;
+            width: 100%;
             background-color: var(--sidebar-bg);
-            padding: 1.5rem 1rem;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
             color: white;
-            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .sidebar.active {
+            display: block;
         }
 
         .sidebar-section {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .sidebar-title {
             color: var(--water-blue);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.8rem;
+            padding: 0.4rem;
             text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
         .sidebar-menu {
@@ -109,7 +107,7 @@
         }
 
         .sidebar-menu li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .sidebar-menu a {
@@ -117,9 +115,10 @@
             color: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
-            padding: 0.8rem;
+            padding: 0.6rem;
             border-radius: 6px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .sidebar-menu a:hover, .sidebar-menu a.active {
@@ -128,44 +127,63 @@
         }
 
         .sidebar-menu a i {
-            margin-right: 12px;
-            width: 20px;
+            margin-right: 10px;
+            width: 18px;
             text-align: center;
+        }
+
+        .menu-toggle {
+            display: block;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .main-content {
             flex-grow: 1;
-            padding: 2rem;
+            padding: 1rem;
             background-color: var(--background-light);
         }
 
         .header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 1rem;
             margin-bottom: 1.5rem;
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: var(--primary-blue);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .header-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
+            flex-wrap: wrap;
         }
 
         .btn {
-            padding: 0.6rem 1.2rem;
+            padding: 0.5rem 1rem;
             border-radius: 6px;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .btn-primary {
@@ -173,23 +191,17 @@
             color: var(--text-light);
         }
 
-        .btn-primary:hover {
-            background-color: var(--secondary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
         .alert-banner {
             background-color: var(--alert-red);
             color: white;
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 8px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             animation: pulse 2s infinite;
-            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+            font-size: 0.9rem;
         }
 
         @keyframes pulse {
@@ -204,16 +216,15 @@
 
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
-            padding: 1.5rem;
-            border-radius: 10px;
+            padding: 1rem;
+            border-radius: 8px;
             color: var(--text-light);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
@@ -227,13 +238,8 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 5px;
+            height: 4px;
             background: rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
         .stat-card.water-level {
@@ -261,38 +267,39 @@
         }
 
         .stat-card h3 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
             font-weight: 600;
         }
 
         .stat-card p {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.9;
         }
 
         .stat-card i {
             position: absolute;
-            right: 1.5rem;
-            top: 1.5rem;
-            font-size: 2rem;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
             opacity: 0.2;
         }
 
         .chart-controls {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 1.5rem;
-            gap: 0.8rem;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .time-range {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
             background-color: var(--card-bg);
             border: 1px solid #ddd;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: all 0.3s ease;
         }
 
@@ -304,97 +311,58 @@
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
         }
 
         .chart-card {
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 1.5rem;
+            border-radius: 8px;
+            padding: 1rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .chart-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
         .chart-title {
             color: var(--primary-blue);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .chart-container {
-            height: 280px;
+            height: 250px;
             position: relative;
         }
 
         .current-value {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--primary-blue);
-            margin-top: 1rem;
-            padding: 0.8rem;
+            margin-top: 0.8rem;
+            padding: 0.6rem;
             background-color: rgba(26, 79, 114, 0.05);
             border-radius: 6px;
             font-weight: 500;
         }
 
-        .info-container {
-            margin-top: 2rem;
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .info-container h2 {
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--water-blue);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-container ul {
-            list-style: none;
-        }
-
-        .info-container li {
-            padding: 0.8rem;
-            margin-bottom: 0.5rem;
-            background-color: rgba(26, 79, 114, 0.05);
-            border-radius: 6px;
-            border-left: 4px solid var(--water-blue);
-        }
-
-        .info-container li strong {
-            color: var(--primary-blue);
-        }
-
         .system-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 1.5rem;
-            padding: 1rem;
+            gap: 8px;
+            margin-top: 1.2rem;
+            padding: 0.8rem;
             background: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 6px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
         }
 
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background-color: var(--ok-green);
         }
@@ -408,41 +376,117 @@
             color: var(--primary-blue);
         }
 
-        @media (max-width: 1200px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
+        /* Medium devices (tablets, 768px and up) */
+        @media (min-width: 768px) {
+            .navbar {
+                padding: 0.8rem 2rem;
             }
-        }
-
-        @media (max-width: 768px) {
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+                gap: 15px;
+            }
+            
+            .navbar-brand img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .admin-icon {
+                font-size: 1.5rem;
+            }
+            
             .main-container {
-                flex-direction: column;
+                flex-direction: row;
+                padding-top: 70px;
             }
             
             .sidebar {
-                width: 100%;
-                padding: 1rem;
+                width: 260px;
+                display: block;
+                padding: 1.5rem 1rem;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 2rem;
+            }
+            
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+                gap: 10px;
             }
             
             .stats-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.2rem;
+            }
+            
+            .stat-card {
+                padding: 1.5rem;
+            }
+            
+            .stat-card h3 {
+                font-size: 2.2rem;
+            }
+            
+            .stat-card i {
+                font-size: 2rem;
+                right: 1.5rem;
+                top: 1.5rem;
+            }
+            
+            .charts-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .chart-container {
+                height: 280px;
             }
         }
 
-        @media (max-width: 576px) {
+        /* Large devices (desktops, 992px and up) */
+        @media (min-width: 992px) {
+            .stats-container {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+        }
+
+        /* Extra small devices (phones, 360px and down) */
+        @media (max-width: 360px) {
             .stats-container {
                 grid-template-columns: 1fr;
             }
             
-            .header {
+            .header-buttons {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+                width: 100%;
             }
             
-            .header-buttons {
+            .btn {
                 width: 100%;
-                justify-content: space-between;
+                text-align: center;
+            }
+            
+            .chart-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .time-range {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
