@@ -179,6 +179,29 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .alert-banner {
+            background-color: var(--alert-red);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .alert-banner.hidden {
+            display: none;
+        }
+
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -221,8 +244,16 @@
             background: linear-gradient(135deg, #2c6c9e, #4a9fe3);
         }
 
-        .stat-card.tds {
-            background: linear-gradient(135deg, #2c6c9e, #3a8ece);
+        .stat-card.mq135 {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        }
+
+        .stat-card.mq4 {
+            background: linear-gradient(135deg, #16a085, #1abc9c);
+        }
+
+        .stat-card.mq7 {
+            background: linear-gradient(135deg, #d35400, #e67e22);
         }
 
         .stat-card.temperature {
@@ -350,6 +381,33 @@
             color: var(--primary-blue);
         }
 
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--ok-green);
+        }
+
+        .status-indicator.alert {
+            background-color: var(--alert-red);
+        }
+
+        .status-text {
+            font-weight: 500;
+            color: var(--primary-blue);
+        }
+
         @media (max-width: 1200px) {
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -387,29 +445,6 @@
                 justify-content: space-between;
             }
         }
-
-        .system-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--ok-green);
-        }
-
-        .status-text {
-            font-weight: 500;
-            color: var(--primary-blue);
-        }
     </style>
 </head>
 <body>
@@ -433,20 +468,6 @@
                     </li>
                 </ul>
             </div>
-            <!-- <div class="sidebar-section">
-                <h2 class="sidebar-title">System Controls</h2>
-                <ul class="sidebar-menu">
-                    <li>
-                        <a href="#"><i class="fas fa-faucet"></i> Valve Control</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-pump"></i> Pump Status</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-cog"></i> System Settings</a>
-                    </li>
-                </ul>
-            </div> -->
             <div class="sidebar-section">
                 <h2 class="sidebar-title">User Area</h2>
                 <ul class="sidebar-menu">
@@ -466,31 +487,48 @@
                 </div>
             </div>
 
+            <div class="alert-banner hidden" id="alertBanner">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="alertMessage"></span>
+            </div>
+
             <div class="system-status">
-                <div class="status-indicator"></div>
-                <div class="status-text">System Status: All systems operational</div>
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div class="status-text" id="statusText">System Status: All systems operational</div>
             </div>
 
             <div class="stats-container">
                 <div class="stat-card water-level">
                     <i class="fas fa-ruler-vertical"></i>
-                    <h3 id="gasLevelStat">0</h3>
+                    <h3 id="waterLevelStat">0</h3>
+                    <!-- <h3>cm</h3> -->
                     <p><span>Water Level</span></p>
                 </div>
                 <div class="stat-card humidity">
                     <i class="fas fa-tint"></i>
-                    <h3 id="humidityStat">53%</h3>
+                    <h3 id="humidityStat">0%</h3>
                     <p><span>Humidity</span></p>
                 </div>
-                <div class="stat-card tds">
-                    <i class="fas fa-flask"></i>
-                    <h3 id="tdsStat">44</h3>
-                    <p><span>TDS Level</span></p>
+               
+                <div class="stat-card mq4">
+                    <i class="fas fa-fire"></i>
+                    <h3 id="mq4Stat">0</h3>
+                    <p><span>MQ3 (Methane)</span></p>
+                </div>
+                <div class="stat-card mq7">
+                    <i class="fas fa-smog"></i>
+                    <h3 id="mq7Stat">0</h3>
+                    <p><span>MQ2 (Carbon Monoxide)</span></p>
                 </div>
                 <div class="stat-card temperature">
                     <i class="fas fa-thermometer-half"></i>
-                    <h3 id="tempStat">65°</h3>
-                    <p><span>Water Temperature</span></p>
+                    <h3 id="tempStat">0°</h3>
+                    <p><span>Temperature</span></p>
+                </div>
+                 <div class="stat-card mq135">
+                    <i class="fas fa-wind"></i>
+                    <h3 id="mq135Stat">0</h3>
+                    <p><span>MQ135 (Air Quality)</span></p>
                 </div>
             </div>
 
@@ -504,49 +542,70 @@
                 <div class="chart-card">
                     <div class="chart-title"><i class="fas fa-ruler-vertical"></i> Water Level</div>
                     <div class="chart-container">
-                        <canvas id="gasChart"></canvas>
+                        <canvas id="waterLevelChart"></canvas>
                     </div>
-                    <div class="current-value" id="gasValue">Current: 150 cm</div>
+                    <div class="current-value" id="waterLevelValue">Current: 0 cm</div>
+                </div>
+
+               
+
+               
+
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-fire"></i> MQ4 (Methane)</div>
+                    <div class="chart-container">
+                        <canvas id="mq4Chart"></canvas>
+                    </div>
+                    <div class="current-value" id="mq4Value">Current: 0</div>
                 </div>
 
                 <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-smog"></i> MQ7 (Carbon Monoxide)</div>
+                    <div class="chart-container">
+                        <canvas id="mq7Chart"></canvas>
+                    </div>
+                    <div class="current-value" id="mq7Value">Current: 0</div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-thermometer-half"></i> Temperature</div>
+                    <div class="chart-container">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                    <div class="current-value" id="tempValue">Current: 0°C</div>
+                </div>
+
+                 <div class="chart-card">
                     <div class="chart-title"><i class="fas fa-tint"></i> Humidity</div>
                     <div class="chart-container">
                         <canvas id="humidityChart"></canvas>
                     </div>
-                    <div class="current-value" id="humidityValue">Current: 53%</div>
+                    <div class="current-value" id="humidityValue">Current: 0%</div>
                 </div>
 
-                <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-flask"></i> TDS Level</div>
+                 <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-wind"></i> MQ135 (Air Quality)</div>
                     <div class="chart-container">
-                        <canvas id="tdsChart"></canvas>
+                        <canvas id="mq135Chart"></canvas>
                     </div>
-                    <div class="current-value" id="tdsValue">Current: 44 ppm</div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-thermometer-half"></i> Water Temperature</div>
-                    <div class="chart-container">
-                        <canvas id="tempChart"></canvas>
-                    </div>
-                    <div class="current-value" id="tempValue">Current: 65°C</div>
+                    <div class="current-value" id="mq135Value">Current: 0</div>
                 </div>
             </div>
             
-            <div class="info-container">
+            <!-- <div class="info-container">
                 <h2><i class="fas fa-info-circle"></i> System Information</h2>
                 <ul>
-                    <li><strong>Water Level:</strong> Monitors the current depth of water in the drainage system</li>
-                    <li><strong>Humidity:</strong> Measures ambient air moisture around the drainage infrastructure</li>
-                    <li><strong>TDS Level:</strong> Total Dissolved Solids indicating water quality in the drainage system</li>
-                    <li><strong>Water Temperature:</strong> Temperature reading of water in the drainage channels</li>
+                    <li><strong>Water Level:</strong> Monitors the current depth of water in the drainage system (cm)</li>
+                    <li><strong>Humidity:</strong> Measures ambient air moisture around the drainage infrastructure (%)</li>
+                    <li><strong>MQ135:</strong> Air quality sensor detecting various pollutants and harmful gases</li>
+                    <li><strong>MQ4:</strong> Methane (CH4) and natural gas sensor</li>
+                    <li><strong>MQ7:</strong> Carbon monoxide (CO) sensor</li>
+                    <li><strong>Temperature:</strong> Ambient temperature reading around the drainage system (°C)</li>
                 </ul>
-            </div>
+            </div> -->
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
       // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js";
@@ -557,28 +616,16 @@
       } from "https://www.gstatic.com/firebasejs/9.20.0/firebase-database.js";
 
       // Your web app's Firebase configuration
-      // const firebaseConfig = {
-      //   apiKey: "AIzaSyAjlMKwceeoWdt5jP2X82nam_9RCC8yNUM",
-      //   authDomain: "auto-cultivation.firebaseapp.com",
-      //   databaseURL:
-      //     "https://auto-cultivation-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      //   projectId: "auto-cultivation",
-      //   storageBucket: "auto-cultivation.appspot.com",
-      //   messagingSenderId: "276770819094",
-      //   appId: "1:276770819094:web:8d87d03c454b01f2bd7937",
-      // };
-
-
       const firebaseConfig = {
-            apiKey: "AIzaSyDdSAtyd4O78StvOEGCmwxD5ce2svyDnCA",
-            authDomain: "drainage-c23d2.firebaseapp.com",
-            databaseURL: "https://drainage-c23d2-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "drainage-c23d2",
-            storageBucket: "drainage-c23d2.firebasestorage.app",
-            messagingSenderId: "853612417011",
-            appId: "1:853612417011:web:ac44547ac93fba48c5cc86",
-            measurementId: "G-9H1PF6DBRS"
-        };
+        apiKey: "AIzaSyDdSAtyd4O78StvOEGCmwxD5ce2svyDnCA",
+        authDomain: "drainage-c23d2.firebaseapp.com",
+        databaseURL: "https://drainage-c23d2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "drainage-c23d2",
+        storageBucket: "drainage-c23d2.firebasestorage.app",
+        messagingSenderId: "853612417011",
+        appId: "1:853612417011:web:ac44547ac93fba48c5cc86",
+        measurementId: "G-9H1PF6DBRS"
+      };
 
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
@@ -587,17 +634,21 @@
       document.addEventListener("DOMContentLoaded", () => {
         // Store chart instances so we can update them later
         const charts = {
-          gas: null,
+          waterLevel: null,
           humidity: null,
-          tds: null,
+          mq135: null,
+          mq4: null,
+          mq7: null,
           temp: null
         };
 
         // Store historical data
         const historicalData = {
-          gas: [],
+          waterLevel: [],
           humidity: [],
-          tds: [],
+          mq135: [],
+          mq4: [],
+          mq7: [],
           temp: [],
           timestamps: []
         };
@@ -612,20 +663,35 @@
         let currentTimeRange = "1h";
         let maxDataPoints = timeRanges[currentTimeRange].points;
 
-        const gasChartElement = document.getElementById("gasChart");
+        // Get all chart elements
+        const waterLevelChartElement = document.getElementById("waterLevelChart");
         const humidityChartElement = document.getElementById("humidityChart");
-        const tdsChartElement = document.getElementById("tdsChart");
+        const mq135ChartElement = document.getElementById("mq135Chart");
+        const mq4ChartElement = document.getElementById("mq4Chart");
+        const mq7ChartElement = document.getElementById("mq7Chart");
         const tempChartElement = document.getElementById("tempChart");
 
-        const gasLevelStat = document.getElementById("gasLevelStat");
+        // Get all stat elements
+        const waterLevelStat = document.getElementById("waterLevelStat");
         const humidityStat = document.getElementById("humidityStat");
-        const tdsStat = document.getElementById("tdsStat");
+        const mq135Stat = document.getElementById("mq135Stat");
+        const mq4Stat = document.getElementById("mq4Stat");
+        const mq7Stat = document.getElementById("mq7Stat");
         const tempStat = document.getElementById("tempStat");
 
-        const gasValue = document.getElementById("gasValue");
+        // Get all current value elements
+        const waterLevelValue = document.getElementById("waterLevelValue");
         const humidityValue = document.getElementById("humidityValue");
-        const tdsValue = document.getElementById("tdsValue");
+        const mq135Value = document.getElementById("mq135Value");
+        const mq4Value = document.getElementById("mq4Value");
+        const mq7Value = document.getElementById("mq7Value");
         const tempValue = document.getElementById("tempValue");
+
+        // Alert elements
+        const alertBanner = document.getElementById("alertBanner");
+        const alertMessage = document.getElementById("alertMessage");
+        const statusIndicator = document.getElementById("statusIndicator");
+        const statusText = document.getElementById("statusText");
 
         // Time range buttons event listeners
         document.querySelectorAll('.time-range').forEach(button => {
@@ -654,65 +720,73 @@
         // Initialize empty charts
         initializeCharts();
 
-        // Reference to the 'cattle' node in Firebase
-        const cattleRef = ref(database, "cattle");
+        // Reference to the 'drainage' node in Firebase
+        const drainageRef = ref(database, "drainage");
 
         // Fetch data from Firebase
-        onValue(cattleRef, (snapshot) => {
+        onValue(drainageRef, (snapshot) => {
           const data = snapshot.val();
           const now = new Date();
           const timeString = now.toLocaleTimeString();
 
           // Store data in history
-          historicalData.gas.push(data.Gas_Level);
-          historicalData.humidity.push(data.Humidity);
-          historicalData.tds.push(data.TDS_Level);
-          historicalData.temp.push(data.Temperature);
+          historicalData.waterLevel.push(data.water_distance_cm);
+          historicalData.humidity.push(data.humidity);
+          historicalData.mq135.push(data.mq135);
+          historicalData.mq4.push(data.mq4);
+          historicalData.mq7.push(data.mq7);
+          historicalData.temp.push(data.temp);
           historicalData.timestamps.push(timeString);
 
           // Keep arrays at max length
-          if (historicalData.gas.length > maxDataPoints) {
-            historicalData.gas.shift();
+          if (historicalData.waterLevel.length > maxDataPoints) {
+            historicalData.waterLevel.shift();
             historicalData.humidity.shift();
-            historicalData.tds.shift();
+            historicalData.mq135.shift();
+            historicalData.mq4.shift();
+            historicalData.mq7.shift();
             historicalData.temp.shift();
             historicalData.timestamps.shift();
           }
 
-          // Update environment details text
-          document.querySelector(
-            ".info-container ul li:nth-child(1)"
-          ).textContent = `Water Level: Monitors the current depth (${data.Gas_Level}cm) of water in the drainage system`;
-          document.querySelector(
-            ".info-container ul li:nth-child(2)"
-          ).textContent = `Humidity: Measures ambient air moisture (${data.Humidity}%) around the drainage infrastructure`;
-          document.querySelector(
-            ".info-container ul li:nth-child(3)"
-          ).textContent = `TDS Level: Total Dissolved Solids (${data.TDS_Level}ppm) indicating water quality`;
-          document.querySelector(
-            ".info-container ul li:nth-child(4)"
-          ).textContent = `Water Temperature: Temperature reading (${data.Temperature}°C) of water in the drainage channels`;
-
           // Update stat cards
-          gasLevelStat.textContent = `${data.Gas_Level}`;
-          humidityStat.textContent = `${data.Humidity}%`;
-          tdsStat.textContent = `${data.TDS_Level}`;
-          tempStat.textContent = `${data.Temperature}°`;
+          waterLevelStat.textContent = `${data.water_distance_cm}`;
+          humidityStat.textContent = `${data.humidity}%`;
+          mq135Stat.textContent = `${data.mq135}`;
+          mq4Stat.textContent = `${data.mq4}`;
+          mq7Stat.textContent = `${data.mq7}`;
+          tempStat.textContent = `${data.temp}°`;
 
           // Update current values
-          gasValue.textContent = `Current: ${data.Gas_Level} cm`;
-          humidityValue.textContent = `Current: ${data.Humidity}%`;
-          tdsValue.textContent = `Current: ${data.TDS_Level} ppm`;
-          tempValue.textContent = `Current: ${data.Temperature}°C`;
+          waterLevelValue.textContent = `Current: ${data.water_distance_cm} cm`;
+          humidityValue.textContent = `Current: ${data.humidity}%`;
+          mq135Value.textContent = `Current: ${data.mq135}`;
+          mq4Value.textContent = `Current: ${data.mq4}`;
+          mq7Value.textContent = `Current: ${data.mq7}`;
+          tempValue.textContent = `Current: ${data.temp}°C`;
+
+          // Handle alerts
+          if (data.alert && data.alert !== "") {
+            alertBanner.classList.remove("hidden");
+            alertMessage.textContent = data.alert;
+            statusIndicator.classList.add("alert");
+            statusText.textContent = "System Status: Alert detected!";
+          } else {
+            alertBanner.classList.add("hidden");
+            statusIndicator.classList.remove("alert");
+            statusText.textContent = "System Status: All systems operational";
+          }
 
           // Update charts with new data
           updateCharts();
         });
 
         function destroyCharts() {
-          if (charts.gas) charts.gas.destroy();
+          if (charts.waterLevel) charts.waterLevel.destroy();
           if (charts.humidity) charts.humidity.destroy();
-          if (charts.tds) charts.tds.destroy();
+          if (charts.mq135) charts.mq135.destroy();
+          if (charts.mq4) charts.mq4.destroy();
+          if (charts.mq7) charts.mq7.destroy();
           if (charts.temp) charts.temp.destroy();
         }
 
@@ -721,34 +795,42 @@
           const timeLabels = generateTimeLabels();
           
           // Create initial charts with time labels
-          charts.gas = createChart(gasChartElement, "Water Level (cm)", [], 3000, timeLabels);
-          charts.humidity = createChart(humidityChartElement, "Humidity (%)", [], 100, timeLabels);
-          charts.tds = createChart(tdsChartElement, "TDS Level (ppm)", [], 3000, timeLabels);
-          charts.temp = createChart(tempChartElement, "Temperature (°C)", [], 50, timeLabels);
+          charts.waterLevel = createChart(waterLevelChartElement, "Water Level (cm)", [], 100, timeLabels, "#1a4f72");
+          charts.humidity = createChart(humidityChartElement, "Humidity (%)", [], 100, timeLabels, "#2c6c9e");
+          charts.mq135 = createChart(mq135ChartElement, "MQ135 (Air Quality)", [], 4096, timeLabels, "#8e44ad");
+          charts.mq4 = createChart(mq4ChartElement, "MQ4 (Methane)", [], 4096, timeLabels, "#16a085");
+          charts.mq7 = createChart(mq7ChartElement, "MQ7 (Carbon Monoxide)", [], 4096, timeLabels, "#d35400");
+          charts.temp = createChart(tempChartElement, "Temperature (°C)", [], 50, timeLabels, "#e74c3c");
         }
 
         function populateChartsFromHistory() {
           // Use available historical data to populate charts
-          const dataLength = historicalData.gas.length;
+          const dataLength = historicalData.waterLevel.length;
           
           if (dataLength > 0) {
             // Update chart data with historical values
-            charts.gas.data.datasets[0].data = [...historicalData.gas];
+            charts.waterLevel.data.datasets[0].data = [...historicalData.waterLevel];
             charts.humidity.data.datasets[0].data = [...historicalData.humidity];
-            charts.tds.data.datasets[0].data = [...historicalData.tds];
+            charts.mq135.data.datasets[0].data = [...historicalData.mq135];
+            charts.mq4.data.datasets[0].data = [...historicalData.mq4];
+            charts.mq7.data.datasets[0].data = [...historicalData.mq7];
             charts.temp.data.datasets[0].data = [...historicalData.temp];
             
             // Update chart labels with historical timestamps
             const labels = [...historicalData.timestamps];
-            charts.gas.data.labels = labels;
+            charts.waterLevel.data.labels = labels;
             charts.humidity.data.labels = labels;
-            charts.tds.data.labels = labels;
+            charts.mq135.data.labels = labels;
+            charts.mq4.data.labels = labels;
+            charts.mq7.data.labels = labels;
             charts.temp.data.labels = labels;
             
             // Update charts
-            charts.gas.update();
+            charts.waterLevel.update();
             charts.humidity.update();
-            charts.tds.update();
+            charts.mq135.update();
+            charts.mq4.update();
+            charts.mq7.update();
             charts.temp.update();
           }
         }
@@ -758,22 +840,30 @@
           const labels = [...historicalData.timestamps];
           
           // Update chart data and labels
-          charts.gas.data.datasets[0].data = [...historicalData.gas];
-          charts.gas.data.labels = labels;
+          charts.waterLevel.data.datasets[0].data = [...historicalData.waterLevel];
+          charts.waterLevel.data.labels = labels;
           
           charts.humidity.data.datasets[0].data = [...historicalData.humidity];
           charts.humidity.data.labels = labels;
           
-          charts.tds.data.datasets[0].data = [...historicalData.tds];
-          charts.tds.data.labels = labels;
+          charts.mq135.data.datasets[0].data = [...historicalData.mq135];
+          charts.mq135.data.labels = labels;
+          
+          charts.mq4.data.datasets[0].data = [...historicalData.mq4];
+          charts.mq4.data.labels = labels;
+          
+          charts.mq7.data.datasets[0].data = [...historicalData.mq7];
+          charts.mq7.data.labels = labels;
           
           charts.temp.data.datasets[0].data = [...historicalData.temp];
           charts.temp.data.labels = labels;
           
           // Update all charts
-          charts.gas.update();
+          charts.waterLevel.update();
           charts.humidity.update();
-          charts.tds.update();
+          charts.mq135.update();
+          charts.mq4.update();
+          charts.mq7.update();
           charts.temp.update();
         }
 
@@ -800,24 +890,7 @@
           return labels;
         }
 
-        function createChart(element, label, data, maxValue, timeLabels) {
-          // Determine color based on measurement type
-          let borderColor, backgroundColor;
-          
-          if (label.includes("Water Level")) {
-            borderColor = "#1a4f72";
-            backgroundColor = "rgba(26, 79, 114, 0.2)";
-          } else if (label.includes("Humidity")) {
-            borderColor = "#2c6c9e";
-            backgroundColor = "rgba(44, 108, 158, 0.2)";
-          } else if (label.includes("TDS")) {
-            borderColor = "#3a8ece";
-            backgroundColor = "rgba(58, 142, 206, 0.2)";
-          } else {
-            borderColor = "#e74c3c";
-            backgroundColor = "rgba(231, 76, 60, 0.2)";
-          }
-          
+        function createChart(element, label, data, maxValue, timeLabels, color) {
           return new Chart(element, {
             type: "line",
             data: {
@@ -826,8 +899,8 @@
                 {
                   label: label,
                   data: data,
-                  backgroundColor: backgroundColor,
-                  borderColor: borderColor,
+                  backgroundColor: color + "20",
+                  borderColor: color,
                   borderWidth: 2,
                   tension: 0.4,
                   fill: true,
@@ -852,8 +925,6 @@
                         return value + "%";
                       } else if (label.includes("Temperature")) {
                         return value + "°C";
-                      } else if (label.includes("TDS")) {
-                        return value + "ppm";
                       } else if (label.includes("Water Level")) {
                         return value + "cm";
                       }
@@ -892,8 +963,6 @@
                         unit = "%";
                       } else if (label.includes("Temperature")) {
                         unit = "°C";
-                      } else if (label.includes("TDS")) {
-                        unit = "ppm";
                       } else if (label.includes("Water Level")) {
                         unit = "cm";
                       }
