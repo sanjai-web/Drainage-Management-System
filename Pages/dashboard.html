@@ -195,7 +195,7 @@
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.8; }
-            100% { opacity: 1; }
+           100% { opacity: 1; }
         }
 
         .alert-banner.hidden {
@@ -482,7 +482,7 @@
             <div class="header">
                 <h1><i class="fas fa-water"></i> Drainage Monitoring Dashboard</h1>
                 <div class="header-buttons">
-                    <button class="btn btn-primary"><i class="fas fa-download"></i> Export Report</button>
+                    <button class="btn btn-primary" id="exportBtn"><i class="fas fa-download"></i> Export Report</button>
                     <button class="btn btn-primary"><i class="fas fa-bell"></i> Alerts</button>
                 </div>
             </div>
@@ -504,11 +504,7 @@
                     <!-- <h3>cm</h3> -->
                     <p><span>Water Level</span></p>
                 </div>
-                <div class="stat-card humidity">
-                    <i class="fas fa-tint"></i>
-                    <h3 id="humidityStat">0%</h3>
-                    <p><span>Humidity</span></p>
-                </div>
+                
                
                 <div class="stat-card mq4">
                     <i class="fas fa-fire"></i>
@@ -518,17 +514,22 @@
                 <div class="stat-card mq7">
                     <i class="fas fa-smog"></i>
                     <h3 id="mq7Stat">0</h3>
-                    <p><span>MQ2 (Carbon Monoxide)</span></p>
+                    <p><span>MQ5 (Carbon Monoxide)</span></p>
                 </div>
                 <div class="stat-card temperature">
                     <i class="fas fa-thermometer-half"></i>
                     <h3 id="tempStat">0°</h3>
                     <p><span>Temperature</span></p>
                 </div>
+                <div class="stat-card humidity">
+                    <i class="fas fa-tint"></i>
+                    <h3 id="humidityStat">0%</h3>
+                    <p><span>Humidity</span></p>
+                </div>
                  <div class="stat-card mq135">
                     <i class="fas fa-wind"></i>
                     <h3 id="mq135Stat">0</h3>
-                    <p><span>MQ135 (Air Quality)</span></p>
+                    <p><span>MQ2 (Air Quality)</span></p>
                 </div>
             </div>
 
@@ -547,12 +548,8 @@
                     <div class="current-value" id="waterLevelValue">Current: 0 cm</div>
                 </div>
 
-               
-
-               
-
                 <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-fire"></i> MQ4 (Methane)</div>
+                    <div class="chart-title"><i class="fas fa-fire"></i> MQ3 (Methane)</div>
                     <div class="chart-container">
                         <canvas id="mq4Chart"></canvas>
                     </div>
@@ -560,7 +557,7 @@
                 </div>
 
                 <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-smog"></i> MQ7 (Carbon Monoxide)</div>
+                    <div class="chart-title"><i class="fas fa-smog"></i> MQ5 (Carbon Monoxide)</div>
                     <div class="chart-container">
                         <canvas id="mq7Chart"></canvas>
                     </div>
@@ -584,25 +581,13 @@
                 </div>
 
                  <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-wind"></i> MQ135 (Air Quality)</div>
+                    <div class="chart-title"><i class="fas fa-wind"></i> MQ2 (Air Quality)</div>
                     <div class="chart-container">
                         <canvas id="mq135Chart"></canvas>
                     </div>
                     <div class="current-value" id="mq135Value">Current: 0</div>
                 </div>
             </div>
-            
-            <!-- <div class="info-container">
-                <h2><i class="fas fa-info-circle"></i> System Information</h2>
-                <ul>
-                    <li><strong>Water Level:</strong> Monitors the current depth of water in the drainage system (cm)</li>
-                    <li><strong>Humidity:</strong> Measures ambient air moisture around the drainage infrastructure (%)</li>
-                    <li><strong>MQ135:</strong> Air quality sensor detecting various pollutants and harmful gases</li>
-                    <li><strong>MQ4:</strong> Methane (CH4) and natural gas sensor</li>
-                    <li><strong>MQ7:</strong> Carbon monoxide (CO) sensor</li>
-                    <li><strong>Temperature:</strong> Ambient temperature reading around the drainage system (°C)</li>
-                </ul>
-            </div> -->
         </main>
     </div>
 
@@ -693,6 +678,9 @@
         const statusIndicator = document.getElementById("statusIndicator");
         const statusText = document.getElementById("statusText");
 
+        // Export button
+        const exportBtn = document.getElementById("exportBtn");
+
         // Time range buttons event listeners
         document.querySelectorAll('.time-range').forEach(button => {
           button.addEventListener('click', function() {
@@ -716,6 +704,55 @@
             populateChartsFromHistory();
           });
         });
+
+        // Export button event listener
+        exportBtn.addEventListener('click', exportDataToCSV);
+
+        // Function to export data as CSV
+        function exportDataToCSV() {
+          // Check if there's data to export
+          if (historicalData.timestamps.length === 0) {
+            alert("No data available to export.");
+            return;
+          }
+          
+          // Create CSV content
+          let csvContent = "Timestamp,Water Level (cm),Humidity (%),MQ2 (Air Quality),MQ3 (Methane),MQ5 (Carbon Monoxide),Temperature (°C)\n";
+          
+          // Add data rows
+          for (let i = 0; i < historicalData.timestamps.length; i++) {
+            const row = [
+              historicalData.timestamps[i],
+              historicalData.waterLevel[i],
+              historicalData.humidity[i],
+              historicalData.mq135[i],
+              historicalData.mq4[i],
+              historicalData.mq7[i],
+              historicalData.temp[i]
+            ];
+            
+            csvContent += row.join(',') + '\n';
+          }
+          
+          // Create a Blob object with the CSV content
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          
+          // Create a download link
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          
+          // Set the link attributes
+          link.setAttribute('href', url);
+          link.setAttribute('download', `drainage_data_${new Date().toISOString().slice(0, 10)}.csv`);
+          link.style.visibility = 'hidden';
+          
+          // Add the link to the DOM and trigger the download
+          document.body.appendChild(link);
+          link.click();
+          
+          // Clean up
+          document.body.removeChild(link);
+        }
 
         // Initialize empty charts
         initializeCharts();
@@ -797,9 +834,9 @@
           // Create initial charts with time labels
           charts.waterLevel = createChart(waterLevelChartElement, "Water Level (cm)", [], 100, timeLabels, "#1a4f72");
           charts.humidity = createChart(humidityChartElement, "Humidity (%)", [], 100, timeLabels, "#2c6c9e");
-          charts.mq135 = createChart(mq135ChartElement, "MQ135 (Air Quality)", [], 4096, timeLabels, "#8e44ad");
-          charts.mq4 = createChart(mq4ChartElement, "MQ4 (Methane)", [], 4096, timeLabels, "#16a085");
-          charts.mq7 = createChart(mq7ChartElement, "MQ7 (Carbon Monoxide)", [], 4096, timeLabels, "#d35400");
+          charts.mq135 = createChart(mq135ChartElement, "MQ2 (Air Quality)", [], 4096, timeLabels, "#8e44ad");
+          charts.mq4 = createChart(mq4ChartElement, "MQ3 (Methane)", [], 4096, timeLabels, "#16a085");
+          charts.mq7 = createChart(mq7ChartElement, "MQ5 (Carbon Monoxide)", [], 4096, timeLabels, "#d35400");
           charts.temp = createChart(tempChartElement, "Temperature (°C)", [], 50, timeLabels, "#e74c3c");
         }
 
